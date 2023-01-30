@@ -9,7 +9,6 @@
     "node-fetch": "^3.3.0"
   },
   "devDependencies": {
-    "@types/dotenv": "^8.2.0",
     "@types/node": "^18.11.18",
     "@types/node-fetch": "^2.6.2",
     "ts-node": "^10.9.1",
