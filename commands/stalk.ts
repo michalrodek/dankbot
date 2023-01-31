@@ -72,7 +72,11 @@ const Stalk: Command = {
       lastUpdate = new Date(dateNow.setMinutes(dateNow.getMinutes() + 5));
     }
 
-    const inputUsers = interaction.options.data.map((user) => user.value);
+    const inputUsers = interaction.options.data.map((user) => {
+      if (typeof user.value === "string") {
+        return user.value.toLowerCase();
+      }
+    });
 
     const searchedUsers: SearchedUsers = {};
 
