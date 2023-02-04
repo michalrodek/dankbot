@@ -53,8 +53,8 @@ interface FlattenComment extends Reactions {
 type ReactionName = "angry" | "heart" | "laugh" | "shock" | "cry";
 type Reactions = Record<ReactionName, number>;
 
-const cache: Comment[] = [];
 const cacheTime = 5;
+let cache: Comment[] = [];
 let dateTo = 0;
 
 const Koment: Command = {
@@ -65,6 +65,8 @@ const Koment: Command = {
     await interaction.deferReply();
 
     if (dateTo < Date.now()) {
+      cache = [];
+
       const zpravyData = await myFetch<Comment>(
         "https://diskuze.seznam.cz/graphql",
         "data",
