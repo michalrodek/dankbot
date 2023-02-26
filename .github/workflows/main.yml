@@ -30,4 +30,4 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          script: cd dankbot && git pull origin main && npm i && npm run build && docker rm -f dankbot && docker build --pull --rm -f "Dockerfile" -t dankbot:latest "." && docker run --name dankbot --rm -d -p 3050:3000/tcp dankbot:latest
+          script: cd dankbot && git pull origin main && npm i && npm run build && pm2 restart dankbot

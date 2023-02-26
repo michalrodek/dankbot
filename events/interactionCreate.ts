@@ -52,61 +52,51 @@ async function handleSelectMenu(interaction: StringSelectMenuInteraction) {
     return;
   }
 
+  const webhookUrl = "https://api.twitch.tv/helix/eventsub/subscriptions";
+
+  const webhook = {
+    version: "1",
+    condition: {
+      broadcaster_user_id: user.data.data[0].id,
+    },
+    transport: {
+      method: "webhook",
+      callback: config.callback,
+      secret: config.callbackSecret,
+    },
+  };
+
   interaction.values.forEach(async (value) => {
     if (!user.data) return;
 
     switch (value) {
       case "online":
         await twitchFetch(
-          "https://api.twitch.tv/helix/eventsub/subscriptions",
+          webhookUrl,
           "POST",
           JSON.stringify({
+            ...webhook,
             type: "stream.online",
-            version: "1",
-            condition: {
-              broadcaster_user_id: user.data.data[0].id,
-            },
-            transport: {
-              method: "webhook",
-              callback: config.callback,
-              secret: config.callbackSecret,
-            },
           })
         );
         break;
       case "offline":
         await twitchFetch(
-          "https://api.twitch.tv/helix/eventsub/subscriptions",
+          webhookUrl,
           "POST",
           JSON.stringify({
+            ...webhook,
             type: "stream.offline",
-            version: "1",
-            condition: {
-              broadcaster_user_id: user.data.data[0].id,
-            },
-            transport: {
-              method: "webhook",
-              callback: `${config.callback}/offline`,
-              secret: config.callbackSecret,
-            },
           })
         );
         break;
       case "update":
         await twitchFetch(
-          "https://api.twitch.tv/helix/eventsub/subscriptions",
+          webhookUrl,
           "POST",
           JSON.stringify({
+            ...webhook,
             type: "channel.update",
-            version: "1",
-            condition: {
-              broadcaster_user_id: user.data.data[0].id,
-            },
-            transport: {
-              method: "webhook",
-              callback: `${config.callback}/update`,
-              secret: config.callbackSecret,
-            },
           })
         );
         break;
