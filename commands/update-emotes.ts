@@ -34,15 +34,14 @@ interface FfzEmotes {
   };
 }
 
-interface BttvEmotes {
-  channelEmotes: {
-    code: string;
-    id: number;
-  }[];
-  sharedEmotes: {
-    code: string;
-    id: number;
-  }[];
+interface BttvEmote {
+  code: string;
+  id: number;
+}
+
+interface BttvUser {
+  channelEmotes: BttvEmote[];
+  sharedEmotes: BttvEmote[];
 }
 
 const UpdateEmotes: Command = {
@@ -66,6 +65,18 @@ const UpdateEmotes: Command = {
     if (twitchEmotes.data) {
       for (const emote of twitchEmotes.data.data) {
         emotes[emote.name] = emote.images.url_4x;
+      }
+    }
+
+    // BTTV Global Emotes
+    const bttvGlobalEmotes = await myFetch<BttvEmote[]>(
+      "https://api.betterttv.net/3/cached/emotes/global",
+      ""
+    );
+
+    if (bttvGlobalEmotes.data) {
+      for (const emote of bttvGlobalEmotes.data) {
+        emotes[emote.code] = `https://cdn.betterttv.net/emote/${emote.id}/3x`;
       }
     }
 
@@ -98,7 +109,7 @@ const UpdateEmotes: Command = {
         }
       }
 
-      // FFZ Emotes
+      // FFZ Channel Emotes
       const ffzEmotes = await myFetch<FfzEmotes>(
         `https://api.frankerfacez.com/v1/room/id/${streamId}`,
         "room"
@@ -113,8 +124,8 @@ const UpdateEmotes: Command = {
         }
       }
 
-      // BTTV Emotes
-      const bttvEmotes = await myFetch<BttvEmotes>(
+      // BTTV Channel Emotes
+      const bttvEmotes = await myFetch<BttvUser>(
         `https://api.betterttv.net/3/cached/users/twitch/${streamId}`,
         "channelEmotes"
       );
@@ -126,6 +137,18 @@ const UpdateEmotes: Command = {
 
         for (const emote of bttvEmotes.data.sharedEmotes) {
           emotes[emote.code] = `https://cdn.betterttv.net/emote/${emote.id}/3x`;
+        }
+      }
+
+      // 7TV Channel Emotes
+      const sevenTvEmotes = await myFetch<SevenTvEmotes[]>(
+        `https://api.7tv.app/v2/users/${streamId}/emotes`,
+        "name"
+      );
+
+      if (sevenTvEmotes.data) {
+        for (const emote of sevenTvEmotes.data) {
+          emotes[emote.name] = emote.urls[3][1];
         }
       }
     }
