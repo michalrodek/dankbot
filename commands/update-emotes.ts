@@ -52,9 +52,7 @@ const UpdateEmotes: Command = {
     await interaction.deferReply();
 
     const emotes: { [key: string]: string } = {};
-    const streamIds = [
-      186352304, 605904906, 102440358, 118291244, 222685529, 22484632,
-    ];
+    const streamIds = config.streamers;
 
     // Twitch Global Emotes
     const twitchEmotes = await twitchFetch<TwitchEmotes>(
