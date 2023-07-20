@@ -4,12 +4,18 @@ import { SlashCommandBuilder } from "discord.js";
 import { Command } from "../interfaces.js";
 import config from "../config.json" assert { type: "json" };
 
+enum EmoteFormat {
+  "animated" = "animated",
+  "static" = "static",
+}
+
 interface TwitchEmotes {
   data: {
     name: string;
     images: {
       url_4x: string;
     };
+    format: EmoteFormat[];
   }[];
 }
 
@@ -62,7 +68,15 @@ const UpdateEmotes: Command = {
 
     if (twitchEmotes.data) {
       for (const emote of twitchEmotes.data.data) {
-        emotes[emote.name] = emote.images.url_4x;
+        if (emote.format.includes(EmoteFormat.animated)) {
+          const urlWithAnimation = emote.images.url_4x.replace(
+            `/${EmoteFormat.static}/`,
+            `/${EmoteFormat.animated}/`
+          );
+          emotes[emote.name] = urlWithAnimation;
+        } else {
+          emotes[emote.name] = emote.images.url_4x;
+        }
       }
     }
 
