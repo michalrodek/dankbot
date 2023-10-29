@@ -28,6 +28,8 @@ const Youtube: Command = {
     if (!(interaction.options instanceof CommandInteractionOptionResolver))
       return;
 
+    await interaction.deferReply();
+
     const query = interaction.options.getString("query");
     const data = await myFetch<YoutubeData>(
       `https://www.googleapis.com/youtube/v3/search?part=id&q=${query}&type=video&maxResults=1&key=${config.youtubeToken}`,
@@ -42,7 +44,7 @@ const Youtube: Command = {
 
     const url = `https://www.youtube.com/watch?v=${data.data.items[0].id.videoId}`;
 
-    await interaction.reply(url);
+    await interaction.editReply(url);
   },
 };
 
