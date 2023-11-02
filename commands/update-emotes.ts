@@ -19,9 +19,28 @@ interface TwitchEmotes {
   }[];
 }
 
+interface SevenTvUser {
+  name: string;
+  emote_set: {
+    emotes: SevenTvEmotes[];
+  };
+}
+
+interface SevenTvEmoteSet {
+  name: string;
+  emotes: SevenTvEmotes[];
+}
+
 interface SevenTvEmotes {
   name: string;
-  urls: string[][];
+  data: {
+    host: {
+      url: string;
+      files: {
+        name: string;
+      }[];
+    };
+  };
 }
 
 interface FfzEmotes {
@@ -93,14 +112,19 @@ const UpdateEmotes: Command = {
     }
 
     // 7TV Global Emotes
-    const sevenTvEmotes = await myFetch<SevenTvEmotes[]>(
-      "https://api.7tv.app/v2/emotes/global",
+    const sevenTvEmotes = await myFetch<SevenTvEmoteSet>(
+      "https://7tv.io/v3/emote-sets/global",
       "name"
     );
 
     if (sevenTvEmotes.data) {
-      for (const emote of sevenTvEmotes.data) {
-        emotes[emote.name] = emote.urls[3][1];
+      for (const emote of sevenTvEmotes.data.emotes) {
+        const url = emote.data.host.url;
+        const file = emote.data.host.files.find((file) =>
+          file.name.includes("3x.webp")
+        );
+
+        emotes[emote.name] = `${url}/${file?.name}`;
       }
     }
 
@@ -153,14 +177,19 @@ const UpdateEmotes: Command = {
       }
 
       // 7TV Channel Emotes
-      const sevenTvEmotes = await myFetch<SevenTvEmotes[]>(
-        `https://api.7tv.app/v2/users/${streamId}/emotes`,
-        "name"
+      const sevenTvEmotes = await myFetch<SevenTvUser>(
+        `https://7tv.io/v3/users/twitch/${streamId}`,
+        "username"
       );
 
-      if (sevenTvEmotes.data) {
-        for (const emote of sevenTvEmotes.data) {
-          emotes[emote.name] = emote.urls[3][1];
+      if (sevenTvEmotes.data?.emote_set) {
+        for (const emote of sevenTvEmotes.data.emote_set.emotes) {
+          const url = emote.data.host.url;
+          const file = emote.data.host.files.find((file) =>
+            file.name.includes("3x.webp")
+          );
+
+          emotes[emote.name] = `${url}/${file?.name}`;
         }
       }
     }
